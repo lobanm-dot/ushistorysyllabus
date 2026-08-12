@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Did You Actually Read The Syllabus? - Multiplier Quiz</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tone.js for Audio FX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
+        }
+
+        .wheel-container {
+            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.6));
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('setup-screen')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-base md:text-lg tracking-tight text-white flex items-center gap-2">
+                        Syllabus <span class="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Multiplier</span> Quiz
+                    </h1>
+                    <p class="text-[11px] text-slate-400 -mt-1 hidden sm:block">Mr. Loban's U.S. History Investigation</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button id="sound-toggle-btn" onclick="toggleAudio()" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition text-xs font-bold flex items-center space-x-1.5">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-amber-400"></i>
+                    <span id="sound-text" class="hidden sm:inline">Audio On</span>
+                </button>
+
+                <button onclick="openCustomModal()" class="px-3 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 font-bold text-xs transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span class="hidden md:inline">Custom Syllabus</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- ====================================================================
+             1. SETUP / SYLLABUS SELECTION SCREEN
+             ==================================================================== -->
+        <section id="setup-screen" class="space-y-8 py-4 animate-fade-in">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="px-3.5 py-1 rounded-full text-xs font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 inline-block uppercase tracking-wider shadow-sm">
+                    <i class="fa-solid fa-flask text-amber-400 mr-1"></i> A Highly Scientific Investigation
+                </span>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                    Did You Actually Read <br>
+                    <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-pink-500 bg-clip-text text-transparent">The Syllabus?</span>
+                </h2>
+                <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+                    Review the syllabus pages first, then answer correctly to earn points and spin the <strong>Multiplier Wheel</strong>!
+                </p>
+            </div>
+
+            <!-- Featured Class Quiz Card -->
+            <div class="group glass-card border-2 border-indigo-500/40 p-6 md:p-8 rounded-3xl relative overflow-hidden shadow-2xl transition hover:border-indigo-500/70">
+                <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-indigo-600/20 rounded-full blur-3xl group-hover:bg-indigo-500/30 transition"></div>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+                    <div class="space-y-3 max-w-xl">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-extrabold uppercase tracking-wide">
+                            <i class="fa-solid fa-star text-amber-400"></i>
+                            <span>Featured Class Syllabus</span>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-white">Mr. Loban's U.S. History Syllabus</h3>
+                        <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+                            Test your knowledge on grading categories, late policies, AI expectations (Levels 0 & 1), cell phone Red Zones, and classroom success formulas!
+                        </p>
+                        <div class="flex items-center space-x-4 text-xs font-bold text-slate-400 pt-1">
+                            <span class="flex items-center"><i class="fa-solid fa-circle-question text-indigo-400 mr-1.5"></i> 17 Questions</span>
+                            <span class="flex items-center"><i class="fa-solid fa-book text-indigo-400 mr-1.5"></i> 11 Syllabus Pages</span>
+                            <span class="flex items-center"><i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Spin Multipliers</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row md:flex-col lg:flex-row items-stretch gap-3 w-full md:w-auto">
+                        <button onclick="openSyllabusViewer('loban')" class="px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-sm shadow-xl shadow-indigo-600/30 flex items-center justify-center space-x-2.5 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                            <i class="fa-solid fa-book-open text-base"></i>
+                            <span>Read Syllabus (11 Pages)</span>
+                        </button>
+                        <button onclick="startQuiz('loban')" class="px-5 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 rounded-2xl font-bold text-sm flex items-center justify-center space-x-2 transition">
+                            <span>Skip to Quiz</span>
+                            <i class="fa-solid fa-arrow-right text-xs text-indigo-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg font-bold">1</div>
+                    <h4 class="font-bold text-white text-sm">Read the Syllabus</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Review the 11 syllabus pages to find all grading rules, AI policies, and expectations.</p>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">2</div>
+                    <h4 class="font-bold text-white text-sm">Answer & Win Points</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Answer questions correctly to earn base points scaled by your active multiplier.</p>
+                </div>
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg font-bold">3</div>
+                    <h4 class="font-bold text-white text-sm">Spin the Wheel</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Correct answers grant a spin to unlock high multipliers! One wrong answer resets your spin privilege.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             1.5. INTERACTIVE SYLLABUS READER SCREEN
+             ==================================================================== -->
+        <section id="syllabus-reader-screen" class="hidden space-y-6 max-w-4xl mx-auto py-2">
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-xl">
+                <div class="flex items-center space-x-3">
+                    <button onclick="showScreen('setup-screen')" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-xs font-bold flex items-center space-x-1.5">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Home</span>
+                    </button>
+                    <div>
+                        <h3 class="font-black text-sm md:text-base text-white">Syllabus Reader</h3>
+                        <p class="text-xs text-slate-400">Page <span id="syllabus-page-num" class="text-indigo-400 font-bold">1</span> of <span id="syllabus-total-pages" class="text-indigo-400 font-bold">11</span></p>
+                    </div>
+                </div>
+
+                <!-- Format Switcher & Start Quiz -->
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-1.5 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs">
+                        <span class="text-slate-400 font-medium">Image Ext:</span>
+                        <select id="img-ext-selector" onchange="updateSyllabusImageFormat(this.value)" class="bg-transparent text-indigo-300 font-bold focus:outline-none cursor-pointer">
+                            <option value="png" selected class="bg-slate-900 text-white">.png</option>
+                            <option value="jpg" class="bg-slate-900 text-white">.jpg</option>
+                            <option value="jpeg" class="bg-slate-900 text-white">.jpeg</option>
+                            <option value="webp" class="bg-slate-900 text-white">.webp</option>
+                        </select>
+                    </div>
+
+                    <button onclick="startQuiz('loban')" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 rounded-xl font-black text-xs shadow-lg transition flex items-center space-x-1.5">
+                        <span>Start Quiz</span>
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Syllabus Image Display Frame -->
+            <div class="relative bg-slate-900/80 border border-slate-800 rounded-3xl p-4 md:p-6 shadow-2xl flex flex-col items-center justify-between overflow-hidden">
+                <div class="w-full flex justify-center items-center my-auto py-2">
+                    <div class="w-full max-w-xl aspect-[8/11] max-h-[75vh] flex items-center justify-center relative">
+                        <img id="syllabus-img-display" src="syllabus1.png" onerror="handleSyllabusImgError(this)" alt="Syllabus Page" class="w-full h-full object-contain rounded-2xl shadow-2xl border border-slate-800 transition-all duration-300 bg-slate-950/50">
+
+                        <!-- Fallback Placeholder Card -->
+                        <div id="syllabus-img-fallback" class="hidden w-full h-full p-6 md:p-8 rounded-2xl bg-slate-950/90 border border-slate-800 text-center space-y-4 flex flex-col items-center justify-center">
+                            <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-2xl">
+                                <i class="fa-solid fa-file-image"></i>
+                            </div>
+                            <div>
+                                <h4 id="fallback-page-title" class="text-xl font-black text-white">Syllabus Page 1</h4>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                                    Image file <code id="fallback-filename" class="text-indigo-300 font-mono font-bold">syllabus1.png</code> was not found in your main folder.
+                                </p>
+                            </div>
+                            <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 text-[11px] text-slate-300 text-left space-y-1.5 font-mono max-w-sm">
+                                <p class="text-amber-400 font-bold">💡 How to show your syllabus pages:</p>
+                                <p>1. Save your 11 images in the folder alongside this HTML file.</p>
+                                <p>2. Name them <code class="text-indigo-300">syllabus1.png</code> through <code class="text-indigo-300">syllabus11.png</code> (or select another extension above).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center justify-between w-full max-w-md pt-4 border-t border-slate-800/80">
+                    <button id="prev-page-btn" onclick="changeSyllabusPage(-1)" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none text-slate-200 font-bold text-xs transition flex items-center space-x-2">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Previous</span>
+                    </button>
+
+                    <span class="text-xs font-bold text-slate-400">
+                        Page <span id="syllabus-page-counter" class="text-white">1 / 11</span>
+                    </span>
+
+                    <button id="next-page-btn" onclick="changeSyllabusPage(1)" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center space-x-2">
+                        <span>Next</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Page Dots Navigation -->
+                <div id="page-dots-container" class="flex items-center justify-center space-x-1.5 pt-3 flex-wrap"></div>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             2. QUIZ GAMEPLAY SCREEN
+             ==================================================================== -->
+        <section id="quiz-screen" class="hidden space-y-6 max-w-3xl mx-auto py-2">
+            <!-- Score & Progress Header -->
+            <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Question Progress</span>
+                    <div class="flex items-center space-x-2">
+                        <span id="current-q-num" class="text-lg font-black text-white">1</span>
+                        <span class="text-slate-500 font-bold">/</span>
+                        <span id="total-q-num" class="text-sm font-bold text-slate-400">17</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                    <!-- Current Score -->
+                    <div class="text-right">
+                        <div class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Total Score</div>
+                        <div id="score-display" class="text-xl font-black text-amber-400">0 pts</div>
+                    </div>
+
+                    <!-- Active Multiplier Badge -->
+                    <div class="text-right pl-4 border-l border-slate-800">
+                        <div class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Next Multiplier</div>
+                        <div id="multiplier-badge" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 font-black text-base border border-indigo-500/30">
+                            <i class="fa-solid fa-bolt text-xs text-amber-400"></i>
+                            <span id="active-mult-value">1.0x</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
+                <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-amber-400 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="glass-card p-6 md:p-8 rounded-3xl border border-slate-800 space-y-6 relative overflow-hidden">
+                <div class="space-y-2">
+                    <span id="question-category" class="px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[11px] font-extrabold uppercase tracking-wider inline-block">
+                        Question
+                    </span>
+                    <h3 id="question-text" class="text-xl sm:text-2xl font-black text-white leading-snug">
+                        Loading question...
+                    </h3>
+                </div>
+
+                <!-- Answer Options -->
+                <div id="options-container" class="space-y-3 pt-2">
+                    <!-- Options injected via JS -->
+                </div>
+
+                <!-- Immediate Feedback Panel -->
+                <div id="feedback-panel" class="hidden p-4 rounded-2xl border space-y-2 animate-fade-in">
+                    <div class="flex items-center space-x-2 font-black text-sm" id="feedback-title">
+                        <i id="feedback-icon" class="fa-solid"></i>
+                        <span id="feedback-header-text">Feedback</span>
+                    </div>
+                    <p id="feedback-explanation" class="text-xs md:text-sm text-slate-300 leading-relaxed"></p>
+                </div>
+
+                <!-- Action Button Container -->
+                <div class="flex items-center justify-between pt-2">
+                    <div class="text-xs text-slate-400 font-medium italic">
+                        <span id="high-stakes-warning"><i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1"></i> Incorrect answer = No wheel spin & resets multiplier!</span>
+                    </div>
+
+                    <button id="submit-next-btn" onclick="handleQuestionSubmit()" disabled class="px-6 py-3 rounded-2xl bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-500 text-white font-extrabold text-sm transition flex items-center space-x-2 shadow-lg">
+                        <span id="btn-text">Confirm Answer</span>
+                        <i id="btn-icon" class="fa-solid fa-check text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================================
+             3. MULTIPLIER WHEEL MODAL
+             ==================================================================== -->
+        <div id="wheel-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 animate-fade-in">
+            <div class="glass-card max-w-md w-full p-6 md:p-8 rounded-3xl border border-indigo-500/30 text-center space-y-6 shadow-2xl relative overflow-hidden">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black uppercase tracking-wider">
+                        <i class="fa-solid fa-crown text-amber-400"></i>
+                        <span>Correct Answer Bonus</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white">Spin For Multiplier!</h3>
+                    <p class="text-xs text-slate-400">Spin the wheel to boost your points on the next question!</p>
+                </div>
+
+                <!-- Wheel Canvas Container -->
+                <div class="relative flex justify-center items-center py-2">
+                    <!-- Wheel Pointer Indicator -->
+                    <div class="absolute -top-1 z-20 text-amber-400 text-2xl drop-shadow-md">
+                        <i class="fa-solid fa-caret-down"></i>
+                    </div>
+
+                    <div class="wheel-container">
+                        <canvas id="wheel-canvas" width="300" height="300" class="rounded-full border-4 border-slate-800 shadow-2xl"></canvas>
+                    </div>
+                </div>
+
+                <!-- Result & Spin Button -->
+                <div class="space-y-3">
+                    <div id="wheel-result-display" class="text-lg font-black text-indigo-300 min-h-[28px]">
+                        Ready to spin!
+                    </div>
+
+                    <button id="spin-btn" onclick="spinWheel()" class="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-slate-950 font-black rounded-2xl text-base shadow-xl shadow-amber-500/20 transition transform hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-rotate text-sm"></i>
+                        <span>SPIN THE WHEEL</span>
+                    </button>
+
+                    <button id="continue-after-spin-btn" onclick="closeWheelModal()" class="hidden w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-2xl text-sm transition flex items-center justify-center space-x-2">
+                        <span>Continue To Next Question</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====================================================================
+             4. RESULTS SCREEN
+             ==================================================================== -->
+        <section id="results-screen" class="hidden space-y-8 max-w-2xl mx-auto py-6 animate-fade-in">
+            <div class="glass-card p-8 rounded-3xl border border-slate-800 text-center space-y-6 shadow-2xl relative overflow-hidden">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 text-slate-950 flex items-center justify-center text-4xl mx-auto shadow-xl shadow-amber-500/20">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+
+                <div class="space-y-2">
+                    <span class="text-xs font-black text-amber-400 uppercase tracking-widest">Investigation Complete</span>
+                    <h2 class="text-3xl md:text-4xl font-black text-white">Syllabus Mastered!</h2>
+                    <p id="result-evaluation-text" class="text-slate-300 text-sm leading-relaxed max-w-md mx-auto">
+                        You've proven you actually paid attention to Mr. Loban's U.S. History syllabus!
+                    </p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase">Final Score</div>
+                        <div id="final-score" class="text-2xl font-black text-amber-400 mt-1">0</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase">Accuracy</div>
+                        <div id="final-accuracy" class="text-2xl font-black text-emerald-400 mt-1">0%</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 col-span-2 sm:col-span-1">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase">Max Streak</div>
+                        <div id="final-streak" class="text-2xl font-black text-indigo-400 mt-1">0</div>
+                    </div>
+                </div>
+
+                <!-- Final Teacher Quote Note -->
+                <div class="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 text-xs sm:text-sm font-medium italic text-left space-y-1">
+                    <div class="font-bold text-indigo-300 not-italic flex items-center gap-1.5">
+                        <i class="fa-solid fa-quote-left text-amber-400"></i> Mr. Loban's Closing Thought:
+                    </div>
+                    <p class="pl-4 border-l-2 border-indigo-400">
+                        “My job is to help you find something in it that matters to you.”
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <button onclick="restartQuiz()" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Try Again</span>
+                    </button>
+                    <button onclick="showScreen('setup-screen')" class="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl font-bold text-sm transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Main Menu</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Syllabus Creator Modal -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-xl w-full p-6 rounded-3xl border border-slate-800 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="font-black text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-indigo-400"></i> Custom Syllabus Quiz
+                </h3>
+                <button onclick="closeCustomModal()" class="text-slate-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-400">Paste or type custom JSON formatted questions to play your own syllabus game!</p>
+            
+            <textarea id="custom-json-input" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500" placeholder='[
+  {
+    "q": "What percentage is homework?",
+    "options": ["10%", "20%", "30%", "0%"],
+    "answer": 1,
+    "explanation": "Homework counts for 20% of your grade."
+  }
+]'></textarea>
+
+            <div class="flex items-center justify-end space-x-3 pt-2">
+                <button onclick="closeCustomModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">Cancel</button>
+                <button onclick="loadCustomQuiz()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs shadow-md">Load Custom Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500">
+        <p>Syllabus Multiplier Quiz • Built for Mr. Loban's U.S. History Class</p>
+    </footer>
+
+    <script>
+        /* ====================================================================
+         * 1. MR. LOBAN'S 17 SYLLABUS QUESTIONS
+         * ==================================================================== */
+        const LOBAN_SYLLABUS_QUESTIONS = [
+            {
+                q: "What percentage of your grade comes from Assessments?",
+                options: ["25%", "35%", "40%", "97%, because Mr. Loban enjoys suffering"],
+                answer: 2,
+                explanation: "Assessments make up 40% of your overall course grade."
+            },
+            {
+                q: "Which of these belongs in the Assessment category?",
+                options: ["Projects", "Daily notes", "Summarizers", "Remembering to bring Mr. Loban coffee"],
+                answer: 0,
+                explanation: "Projects, unit tests, and major essays are categorized under Assessments (40%)."
+            },
+            {
+                q: "You forgot to turn in an assignment, but the class is still in that unit. What is the highest grade you can earn?",
+                options: ["100%", "90%", "50%", "Whatever grade I can negotiate in the hallway"],
+                answer: 1,
+                explanation: "During the active unit, late assignments earn up to a maximum of 90%."
+            },
+            {
+                q: "Uh-oh. The unit ended and THEN you finally turned in your missing assignment. What's the maximum?",
+                options: ["90%", "75%", "50%", "A strongly worded apology and 100%"],
+                answer: 2,
+                explanation: "Once the unit has officially concluded, late work receives a maximum score of 50%."
+            },
+            {
+                q: "You walk into U.S. History. Where should your cell phone be?",
+                options: ["On my desk, face down", "In my lap where surely no one will notice", "Away and out of sight", "I'm just checking the time, Mr. Loban!"],
+                answer: 2,
+                explanation: "Phones must be put away and completely out of sight before you step into the room."
+            },
+            {
+                q: "TRUE or FALSE: The classroom is a RED ZONE for cell phones.",
+                options: ["TRUE", "FALSE"],
+                answer: 0,
+                explanation: "TRUE! The classroom is strictly a Red Zone for personal mobile devices."
+            },
+            {
+                q: "Your iPad is…",
+                options: ["My personal Netflix machine", "For whatever I want as long as I'm quiet", "A learning tool used as directed by the teacher", "Technically a very expensive cafeteria tray"],
+                answer: 2,
+                explanation: "iPads are strictly educational devices to be used as directed by Mr. Loban."
+            },
+            {
+                q: "Mr. Loban gives an assignment a Level 0 on the AI Scale. What does that mean?",
+                options: ["AI can write it and I change a few words", "AI can brainstorm", "No AI", "AI is allowed if I ask it really nicely"],
+                answer: 2,
+                explanation: "Level 0 means NO AI usage is permitted for that task under any circumstances."
+            },
+            {
+                q: "At Level 1, AI can help you…",
+                options: ["Complete the entire assignment", "Brainstorm and generate ideas", "Take the assessment for you", "Convince Mr. Loban that you definitely studied"],
+                answer: 1,
+                explanation: "At Level 1, generative AI may only be used for brainstorming and idea generation."
+            },
+            {
+                q: "Who gets the final say on your grade?",
+                options: ["ChatGPT", "Some mysterious grading robot", "The student", "Mr. Loban"],
+                answer: 3,
+                explanation: "Mr. Loban maintains final professional judgment and say over all grades."
+            },
+            {
+                q: "TRUE or FALSE: Mr. Loban may use AI to help create materials, assist with grading, and provide feedback.",
+                options: ["TRUE", "FALSE"],
+                answer: 0,
+                explanation: "TRUE! Note: While AI may assist in preparing feedback, AI alone never determines your final grade."
+            },
+            {
+                q: "Which is the BEST strategy when you don't understand something?",
+                options: ["Sit silently and hope the problem disappears", "Ask the person next to me who also has no idea", "Ask questions and advocate for myself", "Begin packing up even though there are 17 minutes left"],
+                answer: 2,
+                explanation: "Always advocate for yourself by asking questions early!"
+            },
+            {
+                q: "Which equation best describes success in this class?",
+                options: ["Talent + Luck = Success", "Perfect Grades + No Mistakes = Success", "Effort + Attitude + Consistency = Success", "ChatGPT + Copy + Paste = Success"],
+                answer: 2,
+                explanation: "Effort + Attitude + Consistency = Success in Mr. Loban's history class."
+            },
+            {
+                q: "How long has Mr. Loban been teaching history?",
+                options: ["4 years", "10 years", "18 years", "Since the Gilded Age"],
+                answer: 2,
+                explanation: "Mr. Loban has been teaching history for 18 years!"
+            },
+            {
+                q: "Which of these is NOT something Mr. Loban enjoys outside of school?",
+                options: ["Family", "Golf & sports", "The beach", "Assigning 14-page essays every weekend"],
+                answer: 3,
+                explanation: "Mr. Loban loves family, golf, sports, and the beach—not weekend essay marathons!"
+            },
+            {
+                q: "According to the final page, you DON'T have to…",
+                options: ["Come to class", "Put in effort", "Ask questions", "Love history on Day 1"],
+                answer: 3,
+                explanation: "You don't have to love history on Day 1. “My job is to help you find something in it that matters to you.”"
+            }
+        ];
+
+        /* ====================================================================
+         * 2. GAME & SYLLABUS VIEWER STATE
+         * ==================================================================== */
+        let gameState = {
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            currentMultiplier: 1.0,
+            streak: 0,
+            highestStreak: 0,
+            correctCount: 0,
+            selectedOption: null,
+            audioEnabled: true,
+            hasSpinForCurrentQuestion: false
+        };
+
+        let syllabusViewerState = {
+            currentPage: 1,
+            totalPages: 11,
+            imageExtension: 'png',
+            currentPresetKey: 'loban'
+        };
+
+        // Wheel Physics & Drawing State
+        const wheelSectors = [
+            { label: "1.2x", value: 1.2, color: "#6366f1" },
+            { label: "1.5x", value: 1.5, color: "#8b5cf6" },
+            { label: "2.0x", value: 2.0, color: "#ec4899" },
+            { label: "2.5x", value: 2.5, color: "#f59e0b" },
+            { label: "3.0x", value: 3.0, color: "#10b981" },
+            { label: "5.0x", value: 5.0, color: "#ef4444" },
+            { label: "0.5x", value: 0.5, color: "#64748b" },
+            { label: "1.0x", value: 1.0, color: "#3b82f6" }
+        ];
+
+        let wheelState = {
+            angle: 0,
+            isSpinning: false,
+            spinSpeed: 0,
+            selectedSector: null
+        };
+
+        // Tone.js Synth Initialization
+        let synth, polySynth;
+        function initAudio() {
+            try {
+                synth = new Tone.Synth().toDestination();
+                polySynth = new Tone.PolySynth().toDestination();
+                synth.volume.value = -12;
+            } catch (e) {
+                console.warn("Audio Context init error", e);
+            }
+        }
+
+        function playSound(type) {
+            if (!gameState.audioEnabled) return;
+            try {
+                if (!synth) initAudio();
+                Tone.start();
+
+                if (type === 'correct') {
+                    polySynth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "8n");
+                } else if (type === 'wrong') {
+                    synth.triggerAttackRelease("A2", "4n");
+                } else if (type === 'tick') {
+                    synth.triggerAttackRelease("C6", "32n");
+                } else if (type === 'win') {
+                    polySynth.triggerAttackRelease(["G4", "B4", "D5", "G5"], "4n");
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudio() {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            const icon = document.getElementById('sound-icon');
+            const text = document.getElementById('sound-text');
+            if (gameState.audioEnabled) {
+                icon.className = "fa-solid fa-volume-high text-amber-400";
+                text.innerText = "Audio On";
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-slate-500";
+                text.innerText = "Audio Off";
+            }
+        }
+
+        /* ====================================================================
+         * 3. UI NAVIGATION LOGIC
+         * ==================================================================== */
+        function showScreen(screenId) {
+            ['setup-screen', 'syllabus-reader-screen', 'quiz-screen', 'results-screen'].forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ====================================================================
+         * 4. SYLLABUS VIEWER FUNCTIONS
+         * ==================================================================== */
+        function openSyllabusViewer(presetKey = 'loban') {
+            syllabusViewerState.currentPresetKey = presetKey;
+            syllabusViewerState.currentPage = 1;
+            showScreen('syllabus-reader-screen');
+            renderSyllabusPage();
+        }
+
+        function updateSyllabusImageFormat(ext) {
+            syllabusViewerState.imageExtension = ext;
+            renderSyllabusPage();
+        }
+
+        function changeSyllabusPage(delta) {
+            const newPage = syllabusViewerState.currentPage + delta;
+            if (newPage >= 1 && newPage <= syllabusViewerState.totalPages) {
+                syllabusViewerState.currentPage = newPage;
+                renderSyllabusPage();
+            }
+        }
+
+        function setSyllabusPage(pageNumber) {
+            if (pageNumber >= 1 && pageNumber <= syllabusViewerState.totalPages) {
+                syllabusViewerState.currentPage = pageNumber;
+                renderSyllabusPage();
+            }
+        }
+
+        function renderSyllabusPage() {
+            const page = syllabusViewerState.currentPage;
+            const ext = syllabusViewerState.imageExtension;
+            const filename = `syllabus${page}.${ext}`;
+
+            document.getElementById('syllabus-page-num').innerText = page;
+            document.getElementById('syllabus-total-pages').innerText = syllabusViewerState.totalPages;
+            document.getElementById('syllabus-page-counter').innerText = `${page} / ${syllabusViewerState.totalPages}`;
+
+            const imgDisplay = document.getElementById('syllabus-img-display');
+            const fallbackCard = document.getElementById('syllabus-img-fallback');
+
+            imgDisplay.classList.remove('hidden');
+            fallbackCard.classList.add('hidden');
+            imgDisplay.src = filename;
+
+            document.getElementById('prev-page-btn').disabled = (page === 1);
+            document.getElementById('next-page-btn').disabled = (page === syllabusViewerState.totalPages);
+
+            const dotsContainer = document.getElementById('page-dots-container');
+            dotsContainer.innerHTML = '';
+            for (let i = 1; i <= syllabusViewerState.totalPages; i++) {
+                const dot = document.createElement('button');
+                dot.onclick = () => setSyllabusPage(i);
+                if (i === page) {
+                    dot.className = "w-6 h-2 rounded-full bg-indigo-500 transition-all";
+                } else {
+                    dot.className = "w-2 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all";
+                }
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function handleSyllabusImgError(img) {
+            img.classList.add('hidden');
+            const page = syllabusViewerState.currentPage;
+            const ext = syllabusViewerState.imageExtension;
+            const filename = `syllabus${page}.${ext}`;
+
+            document.getElementById('fallback-page-title').innerText = `Syllabus Page ${page}`;
+            document.getElementById('fallback-filename').innerText = filename;
+            document.getElementById('syllabus-img-fallback').classList.remove('hidden');
+        }
+
+        /* ====================================================================
+         * 5. QUIZ GAMEPLAY CORE
+         * ==================================================================== */
+        function startQuiz(presetKey = 'loban') {
+            gameState.questions = [...LOBAN_SYLLABUS_QUESTIONS];
+            gameState.currentIndex = 0;
+            gameState.score = 0;
+            gameState.currentMultiplier = 1.0;
+            gameState.streak = 0;
+            gameState.highestStreak = 0;
+            gameState.correctCount = 0;
+            gameState.selectedOption = null;
+
+            showScreen('quiz-screen');
+            renderQuestion();
+            updateScoreUI();
+        }
+
+        function renderQuestion() {
+            const q = gameState.questions[gameState.currentIndex];
+            gameState.selectedOption = null;
+
+            document.getElementById('current-q-num').innerText = gameState.currentIndex + 1;
+            document.getElementById('total-q-num').innerText = gameState.questions.length;
+
+            const progressPct = ((gameState.currentIndex) / gameState.questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+
+            document.getElementById('question-category').innerText = `Syllabus Question ${gameState.currentIndex + 1}`;
+            document.getElementById('question-text').innerText = q.q;
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((optText, idx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = "w-full p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/80 text-left text-sm font-semibold text-slate-200 transition flex items-center space-x-3 group";
+                optBtn.onclick = () => selectOption(idx);
+                optBtn.id = `option-btn-${idx}`;
+
+                optBtn.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-slate-800 group-hover:bg-indigo-600/20 text-slate-400 group-hover:text-indigo-300 border border-slate-700 flex items-center justify-center font-bold text-xs transition">
+                        ${String.fromCharCode(65 + idx)}
+                    </div>
+                    <span class="flex-grow">${optText}</span>
+                    <i class="fa-regular fa-circle text-slate-600 text-base group-hover:text-indigo-400 select-icon"></i>
+                `;
+                container.appendChild(optBtn);
+            });
+
+            // Reset Feedback Panel & Action Button
+            document.getElementById('feedback-panel').classList.add('hidden');
+            
+            const submitBtn = document.getElementById('submit-next-btn');
+            submitBtn.disabled = true;
+            submitBtn.onclick = handleQuestionSubmit;
+            document.getElementById('btn-text').innerText = "Confirm Answer";
+            document.getElementById('btn-icon').className = "fa-solid fa-check text-xs";
+        }
+
+        function selectOption(idx) {
+            gameState.selectedOption = idx;
+            const q = gameState.questions[gameState.currentIndex];
+
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`option-btn-${i}`);
+                const icon = btn.querySelector('.select-icon');
+                if (i === idx) {
+                    btn.className = "w-full p-4 rounded-2xl bg-indigo-950/60 border-2 border-indigo-500 text-left text-sm font-bold text-white transition flex items-center space-x-3";
+                    icon.className = "fa-solid fa-circle-check text-indigo-400 text-base select-icon";
+                } else {
+                    btn.className = "w-full p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/80 text-left text-sm font-semibold text-slate-200 transition flex items-center space-x-3 group";
+                    icon.className = "fa-regular fa-circle text-slate-600 text-base group-hover:text-indigo-400 select-icon";
+                }
+            });
+
+            document.getElementById('submit-next-btn').disabled = false;
+        }
+
+        function handleQuestionSubmit() {
+            if (gameState.selectedOption === null) return;
+
+            const q = gameState.questions[gameState.currentIndex];
+            const isCorrect = (gameState.selectedOption === q.answer);
+
+            // Disable option buttons
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`option-btn-${i}`);
+                btn.disabled = true;
+                if (i === q.answer) {
+                    btn.className = "w-full p-4 rounded-2xl bg-emerald-950/60 border-2 border-emerald-500 text-left text-sm font-bold text-emerald-200 flex items-center space-x-3";
+                } else if (i === gameState.selectedOption && !isCorrect) {
+                    btn.className = "w-full p-4 rounded-2xl bg-rose-950/60 border-2 border-rose-500 text-left text-sm font-bold text-rose-200 flex items-center space-x-3";
+                }
+            });
+
+            // Feedback Display
+            const feedbackPanel = document.getElementById('feedback-panel');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackHeaderText = document.getElementById('feedback-header-text');
+            const feedbackExp = document.getElementById('feedback-explanation');
+
+            feedbackPanel.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('correct');
+                const basePoints = 100;
+                const earnedPoints = Math.round(basePoints * gameState.currentMultiplier);
+                gameState.score += earnedPoints;
+                gameState.streak++;
+                gameState.correctCount++;
+                if (gameState.streak > gameState.highestStreak) gameState.highestStreak = gameState.streak;
+
+                feedbackPanel.className = "p-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/40 space-y-1 animate-fade-in";
+                feedbackTitle.className = "flex items-center space-x-2 font-black text-sm text-emerald-400";
+                feedbackIcon.className = "fa-solid fa-circle-check text-emerald-400";
+                feedbackHeaderText.innerText = `Correct! +${earnedPoints} Points (${gameState.currentMultiplier}x Multiplier Applied)`;
+                feedbackExp.innerText = q.explanation;
+
+                // Action button opens spin modal
+                const submitBtn = document.getElementById('submit-next-btn');
+                document.getElementById('btn-text').innerText = "Spin Multiplier Wheel!";
+                document.getElementById('btn-icon').className = "fa-solid fa-rotate text-xs";
+                submitBtn.onclick = openWheelModal;
+
+            } else {
+                playSound('wrong');
+                gameState.streak = 0;
+                gameState.currentMultiplier = 1.0; // Reset multiplier on incorrect
+
+                feedbackPanel.className = "p-4 rounded-2xl border border-rose-500/30 bg-rose-950/40 space-y-1 animate-fade-in";
+                feedbackTitle.className = "flex items-center space-x-2 font-black text-sm text-rose-400";
+                feedbackIcon.className = "fa-solid fa-circle-xmark text-rose-400";
+                feedbackHeaderText.innerText = "Incorrect! Multiplier Reset to 1.0x (No Wheel Spin)";
+                feedbackExp.innerText = q.explanation;
+
+                // Direct to next question without spin
+                const submitBtn = document.getElementById('submit-next-btn');
+                document.getElementById('btn-text').innerText = "Next Question";
+                document.getElementById('btn-icon').className = "fa-solid fa-arrow-right text-xs";
+                submitBtn.onclick = advanceToNextQuestion;
+            }
+
+            updateScoreUI();
+        }
+
+        function advanceToNextQuestion() {
+            gameState.currentIndex++;
+            if (gameState.currentIndex < gameState.questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateScoreUI() {
+            document.getElementById('score-display').innerText = `${gameState.score} pts`;
+            document.getElementById('active-mult-value').innerText = `${gameState.currentMultiplier.toFixed(1)}x`;
+        }
+
+        /* ====================================================================
+         * 6. MULTIPLIER CANVAS WHEEL LOGIC
+         * ==================================================================== */
+        function drawWheel() {
+            const canvas = document.getElementById('wheel-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const numSectors = wheelSectors.length;
+            const radius = canvas.width / 2;
+            const arc = (2 * Math.PI) / numSectors;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(radius, radius);
+            ctx.rotate(wheelState.angle);
+
+            for (let i = 0; i < numSectors; i++) {
+                const angle = i * arc;
+                ctx.beginPath();
+                ctx.fillStyle = wheelSectors[i].color;
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, angle, angle + arc);
+                ctx.lineTo(0, 0);
+                ctx.fill();
+                ctx.strokeStyle = "#0f172a";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Text
+                ctx.save();
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "900 16px Plus Jakarta Sans";
+                ctx.fillText(wheelSectors[i].label, radius - 20, 6);
+                ctx.restore();
+            }
+
+            // Center Pin
+            ctx.beginPath();
+            ctx.fillStyle = "#0f172a";
+            ctx.arc(0, 0, 28, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = "#6366f1";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function openWheelModal() {
+            document.getElementById('wheel-modal').classList.remove('hidden');
+            document.getElementById('spin-btn').classList.remove('hidden');
+            document.getElementById('spin-btn').disabled = false;
+            document.getElementById('continue-after-spin-btn').classList.add('hidden');
+            document.getElementById('wheel-result-display').innerText = "Ready to spin!";
+            drawWheel();
+        }
+
+        function spinWheel() {
+            if (wheelState.isSpinning) return;
+            wheelState.isSpinning = true;
+            document.getElementById('spin-btn').disabled = true;
+
+            const totalSectors = wheelSectors.length;
+            const extraRounds = 5 + Math.floor(Math.random() * 3);
+            const targetSectorIdx = Math.floor(Math.random() * totalSectors);
+            const sectorArc = (2 * Math.PI) / totalSectors;
+
+            // Target angle so pointer at top points to targetSectorIdx
+            const targetAngle = (extraRounds * 2 * Math.PI) + ((totalSectors - targetSectorIdx) * sectorArc) - (sectorArc / 2) - (Math.PI / 2);
+
+            let currentAngle = wheelState.angle % (2 * Math.PI);
+            let startTime = null;
+            const duration = 3500; // ms
+
+            function animateSpin(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Cubic ease-out
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                wheelState.angle = currentAngle + (targetAngle - currentAngle) * easeOut;
+
+                drawWheel();
+                playSound('tick');
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateSpin);
+                } else {
+                    wheelState.isSpinning = false;
+                    wheelState.selectedSector = wheelSectors[targetSectorIdx];
+                    gameState.currentMultiplier = wheelState.selectedSector.value;
+
+                    playSound('win');
+                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+                    document.getElementById('wheel-result-display').innerHTML = `
+                        <span class="text-amber-400 font-black text-xl">Landed on ${wheelState.selectedSector.label}!</span>
+                        <div class="text-xs text-slate-300 mt-1">Multiplier set to ${wheelState.selectedSector.label} for next question!</div>
+                    `;
+
+                    document.getElementById('spin-btn').classList.add('hidden');
+                    document.getElementById('continue-after-spin-btn').classList.remove('hidden');
+                    updateScoreUI();
+                }
+            }
+
+            requestAnimationFrame(animateSpin);
+        }
+
+        function closeWheelModal() {
+            document.getElementById('wheel-modal').classList.add('hidden');
+            advanceToNextQuestion();
+        }
+
+        /* ====================================================================
+         * 7. FINAL RESULTS & CUSTOM SYLLABUS MODAL
+         * ==================================================================== */
+        function showResults() {
+            showScreen('results-screen');
+            playSound('win');
+            confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+
+            const accuracy = Math.round((gameState.correctCount / gameState.questions.length) * 100);
+            document.getElementById('final-score').innerText = gameState.score;
+            document.getElementById('final-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('final-streak').innerText = gameState.highestStreak;
+
+            const evalText = document.getElementById('result-evaluation-text');
+            if (accuracy >= 90) {
+                evalText.innerText = "Outstanding! You know Mr. Loban's syllabus inside and out. 100% prepared for class!";
+            } else if (accuracy >= 70) {
+                evalText.innerText = "Great job! You have a solid grasp on grading policies, AI rules, and expectations.";
+            } else {
+                evalText.innerText = "Nice try! Review the syllabus reader once more to get every rule down!";
+            }
+        }
+
+        function restartQuiz() {
+            startQuiz('loban');
+        }
+
+        function openCustomModal() {
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeCustomModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        function loadCustomQuiz() {
+            const raw = document.getElementById('custom-json-input').value.trim();
+            if (!raw) return;
+
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    LOBAN_SYLLABUS_QUESTIONS.length = 0;
+                    parsed.forEach(item => LOBAN_SYLLABUS_QUESTIONS.push(item));
+                    closeCustomModal();
+                    startQuiz('custom');
+                } else {
+                    alert("Invalid format. Please enter a valid JSON array of questions.");
+                }
+            } catch (e) {
+                alert("JSON syntax error. Please double-check your format.");
+            }
+        }
+
+        window.onload = function() {
+            initAudio();
+            drawWheel();
+        };
+    </script>
+</body>
+</html>
